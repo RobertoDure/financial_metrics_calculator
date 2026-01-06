@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { getDefaultFormData } from '../services/financialApi';
 import { Building2, DollarSign, TrendingUp, Calculator } from 'lucide-react';
+import { NumericFormat } from 'react-number-format';
+
+const COMMON_INDUSTRIES = [
+  "Technology", "Healthcare", "Financial Services", "Consumer Discretionary",
+  "Consumer Staples", "Energy", "Industrials", "Materials", "Utilities",
+  "Real Estate", "Telecommunication Services", "Automotive", "Manufacturing",
+  "Retail", "Transportation", "Media & Entertainment", "Software & Services",
+  "Pharmaceuticals", "Biotechnology", "Banking", "Insurance",
+  "Food & Beverage", "Aerospace & Defense", "Construction & Engineering", "Chemicals"
+].sort();
 
 const FinancialForm = ({ onSubmit, loading }) => {
   const [formData, setFormData] = useState(getDefaultFormData());
@@ -9,7 +19,15 @@ const FinancialForm = ({ onSubmit, loading }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'company_name' || name === 'industry' ? value : parseFloat(value) || 0
+      [name]: value
+    }));
+  };
+
+  const handleValueChange = (values, name) => {
+    const { floatValue } = values;
+    setFormData(prev => ({
+      ...prev,
+      [name]: floatValue === undefined ? 0 : floatValue
     }));
   };
 
@@ -55,57 +73,57 @@ const FinancialForm = ({ onSubmit, loading }) => {
       icon: Building2,
       fields: [
         { name: 'company_name', label: 'Company Name', type: 'text' },
-        { name: 'industry', label: 'Industry', type: 'text' }
+        { name: 'industry', label: 'Industry', type: 'select', options: COMMON_INDUSTRIES }
       ]
     },
     {
       title: "Revenue & Growth",
       icon: TrendingUp,
       fields: [
-        { name: 'revenue', label: 'Current Revenue ($)', type: 'number', step: '0.01' },
-        { name: 'revenue_initial', label: 'Initial Revenue ($)', type: 'number', step: '0.01' },
-        { name: 'revenue_final', label: 'Final Revenue ($)', type: 'number', step: '0.01' },
-        { name: 'years', label: 'Number of Years', type: 'number', step: '0.1' }
+        { name: 'revenue', label: 'Current Revenue', type: 'number', formatType: 'currency' },
+        { name: 'revenue_initial', label: 'Initial Revenue', type: 'number', formatType: 'currency' },
+        { name: 'revenue_final', label: 'Final Revenue', type: 'number', formatType: 'currency' },
+        { name: 'years', label: 'Number of Years', type: 'number', formatType: 'decimal', decimalScale: 1 }
       ]
     },
     {
       title: "Financial Statements",
       icon: DollarSign,
       fields: [
-        { name: 'net_income', label: 'Net Income ($)', type: 'number', step: '0.01' },
-        { name: 'total_assets', label: 'Total Assets ($)', type: 'number', step: '0.01' },
-        { name: 'total_equity', label: 'Total Equity ($)', type: 'number', step: '0.01' },
-        { name: 'total_liabilities', label: 'Total Liabilities ($)', type: 'number', step: '0.01' },
-        { name: 'ebit', label: 'EBIT ($)', type: 'number', step: '0.01' },
-        { name: 'interest_expense', label: 'Interest Expense ($)', type: 'number', step: '0.01' }
+        { name: 'net_income', label: 'Net Income', type: 'number', formatType: 'currency' },
+        { name: 'total_assets', label: 'Total Assets', type: 'number', formatType: 'currency' },
+        { name: 'total_equity', label: 'Total Equity', type: 'number', formatType: 'currency' },
+        { name: 'total_liabilities', label: 'Total Liabilities', type: 'number', formatType: 'currency' },
+        { name: 'ebit', label: 'EBIT', type: 'number', formatType: 'currency' },
+        { name: 'interest_expense', label: 'Interest Expense', type: 'number', formatType: 'currency' }
       ]
     },
     {
       title: "Debt & Liquidity",
       icon: Calculator,
       fields: [
-        { name: 'total_debt', label: 'Total Debt ($)', type: 'number', step: '0.01' },
-        { name: 'current_assets', label: 'Current Assets ($)', type: 'number', step: '0.01' },
-        { name: 'current_liabilities', label: 'Current Liabilities ($)', type: 'number', step: '0.01' },
-        { name: 'free_cash_flow', label: 'Free Cash Flow ($)', type: 'number', step: '0.01' }
+        { name: 'total_debt', label: 'Total Debt', type: 'number', formatType: 'currency' },
+        { name: 'current_assets', label: 'Current Assets', type: 'number', formatType: 'currency' },
+        { name: 'current_liabilities', label: 'Current Liabilities', type: 'number', formatType: 'currency' },
+        { name: 'free_cash_flow', label: 'Free Cash Flow', type: 'number', formatType: 'currency' }
       ]
     },
     {
       title: "Market Data",
       icon: TrendingUp,
       fields: [
-        { name: 'shares_outstanding', label: 'Shares Outstanding', type: 'number', step: '1' },
-        { name: 'market_price_per_share', label: 'Market Price per Share ($)', type: 'number', step: '0.01' },
-        { name: 'dividends', label: 'Total Dividends ($)', type: 'number', step: '0.01' },
-        { name: 'eps_growth_percent', label: 'EPS Growth (%)', type: 'number', step: '0.01' }
+        { name: 'shares_outstanding', label: 'Shares Outstanding', type: 'number', formatType: 'integer' },
+        { name: 'market_price_per_share', label: 'Market Price per Share', type: 'number', formatType: 'currency' },
+        { name: 'dividends', label: 'Total Dividends', type: 'number', formatType: 'currency' },
+        { name: 'eps_growth_percent', label: 'EPS Growth', type: 'number', formatType: 'percent' }
       ]
     },
     {
       title: "Other Metrics",
       icon: Calculator,
       fields: [
-        { name: 'depreciation', label: 'Depreciation ($)', type: 'number', step: '0.01' },
-        { name: 'amortization', label: 'Amortization ($)', type: 'number', step: '0.01' }
+        { name: 'depreciation', label: 'Depreciation', type: 'number', formatType: 'currency' },
+        { name: 'amortization', label: 'Amortization', type: 'number', formatType: 'currency' }
       ]
     }
   ];
@@ -133,6 +151,8 @@ const FinancialForm = ({ onSubmit, loading }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+
+
         {formSections.map((section) => {
           const IconComponent = section.icon;
           return (
@@ -147,16 +167,51 @@ const FinancialForm = ({ onSubmit, loading }) => {
                     <label htmlFor={field.name} className="form-label">
                       {field.label}
                     </label>
-                    <input
-                      type={field.type}
-                      id={field.name}
-                      name={field.name}
-                      value={formData[field.name]}
-                      onChange={handleInputChange}
-                      step={field.step}
-                      className="form-input"
-                      required
-                    />
+                    {field.type === 'number' ? (
+                      <NumericFormat
+                        id={field.name}
+                        name={field.name}
+                        value={formData[field.name]}
+                        onValueChange={(values) => handleValueChange(values, field.name)}
+                        thousandSeparator={true}
+                        prefix={field.formatType === 'currency' ? '$ ' : ''}
+                        suffix={field.formatType === 'percent' ? ' %' : ''}
+                        decimalScale={
+                          field.formatType === 'integer' ? 0 :
+                            field.decimalScale !== undefined ? field.decimalScale : 2
+                        }
+                        fixedDecimalScale={field.formatType === 'currency' || field.formatType === 'percent'}
+                        className="form-input"
+                        required
+                      />
+                    ) : field.type === 'select' ? (
+                      <select
+                        id={field.name}
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
+                      >
+                        <option value="">Select an Industry</option>
+                        {field.options.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type={field.type}
+                        id={field.name}
+                        name={field.name}
+                        value={formData[field.name]}
+                        onChange={handleInputChange}
+                        list={field.list}
+                        className="form-input"
+                        required
+                      />
+                    )}
                   </div>
                 ))}
               </div>
